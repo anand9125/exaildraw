@@ -1,8 +1,13 @@
 import express from "express";
 import prisma from "@repo/db";
- const app = express();
+import { authRouter } from "./routes/authRouter";
+const app = express();
 
 app.use(express.json());
+
+
+app.use("api/v1/user",authRouter);
+
 
 app.get("/health", async(req, res) => {
     const userCount = await prisma.user.count();

@@ -3,21 +3,25 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-   "scripts": {
+  "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/bun": "latest",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.10"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@repo/db": "workspace:*",
+    "bcrypt": "^6.0.0",
     "express": "^5.2.1",
-    "@repo/db": "workspace:*"
-      
+    "jsonwebtoken": "^9.0.3",
+    "zod": "^4.3.6"
   }
 }
