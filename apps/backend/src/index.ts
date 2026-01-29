@@ -7,6 +7,7 @@ app.use(express.json());
 
 
 app.use("api/v1/user",authRouter);
+app.use("/api/v1/room",roomRouter)
 
 
 app.get("/health", async(req, res) => {

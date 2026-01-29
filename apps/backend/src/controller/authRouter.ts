@@ -61,7 +61,8 @@ export const loginHandler = async (req: Request, res: Response) => {
                 username
             }
         });
-        if(!user || user.password !== password){
+
+        if(!user || !await bcrypt.compare(password, user.password)){
             res.status(401).json({
                 error: "Invalid username or password"
             });

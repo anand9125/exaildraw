@@ -13,3 +13,7 @@ export const userSigninSchema = z.object({
     password : z.string().min(8)
 })
 
+export const JoinRoomSchema = z.object({
+  joinCode: z.string().length(6),
+});
+
