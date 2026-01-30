@@ -1,0 +1,78 @@
+# every  client have 
+Client A  ───▶  WebSocket #1
+Client B  ───▶  WebSocket #2
+Client C  ───▶  WebSocket #3
+
+Each:
+
+Has its own TCP connection
+
+Has its own event listeners
+
+Has its own lifecycle
+
+Is completely isolated from other clients
+
+
+# so when we are doing  this 
+
+const userVerification = new Map<
+  WebSocket,
+  { verified: boolean; userId?: string }
+>();
+
+this works perfect 
+This works because:
+
+Every socket object is unique
+
+Objects are compared by reference, not value
+
+Two clients can never share the same WebSocket instance
+
+So this is safe:
+
+userVerification.set(socket, { verified: true });
+userVerification.get(socket); // always gets correct user
+
+
+# lets talk about rooms 
+
+what is rooms really means : 
+
+A room is simple A server side goruping ws object
+Thats it 
+
+Mental model : 
+Room 1: [WebSocket #1, WebSocket #3]
+Room 2: [WebSocket #2]
+
+WebSocketServer (singleton)
+ ├── socket A (user 1)
+ ├── socket B (user 2)
+ ├── socket C (user 3)
+
+
+Rooms:
+ ├── room: "chat-1" → [socket A, socket C]
+ ├── room: "chat-2" → [socket B]
+
+
+A socket:
+
+Can be in 0, 1, or many rooms
+Rooms exist only in server memory
+
+# Why singleton matters here
+
+You want:
+
+One WebSocket server
+
+One shared room registry
+
+One shared connection map
+
+If you accidentally create multiple instances → rooms break.
+
+So we use a singleton.
