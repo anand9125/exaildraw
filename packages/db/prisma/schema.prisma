@@ -20,9 +20,9 @@ model User {
   password        String
   name            String
   photo           String?
-  joinedrooms     Room[]  @relation(name: "participants")
-  controlledrooms Room[]
-  Chat            Chat[]
+  joinedrooms     Room[]  @relation(name: "participants") //many to many relation a user can join many rooms and a room can have many users
+  controlledrooms Room[] //one to many relation a user can be admin of many rooms but a room can have only one admin
+  Chat            Chat[] //one user can have many chat messages
 }
 
 model Room {
@@ -32,8 +32,8 @@ model Room {
   participants User[]   @relation(name: "participants")
   admin        User     @relation(fields: [adminId], references: [id])
   adminId      String
-  Chat         Chat[]
-  Draw         Draw[]
+  Chat         Chat[]   //rooms own all messsages
+  Draw         Draw[]   // rooms owns all drawings canvas
   createdAt    DateTime @default(now())
 }
 
@@ -72,7 +72,7 @@ model Draw {
   endY        Int?
   text        String?
   points      Json?
-  room        Room    @relation(references: [id], fields: [roomId])
+  room        Room    @relation(references: [id], fields: [roomId])  //canvas state is room scoped means when user joins rooms fetch all data row when leavs nothing breaks
   roomId      String
 }
 
