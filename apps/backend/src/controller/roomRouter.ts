@@ -4,8 +4,10 @@ import { JoinRoomSchema } from "../types/schema";
 
 export const createRoomController = async (req: Request, res: Response) => {
     try{
-        const userId = req.body.userId;
+        const userId = req.userId;
+        console.log("Request Body User ID:", userId);
         const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+        console.log("Creating room for User ID:", joinCode);
 
         if (!userId){
             res.status(400).json({
@@ -29,7 +31,6 @@ export const createRoomController = async (req: Request, res: Response) => {
             roomId: newRoom.id,
             joinCode: newRoom.joinCode
         });
-        
     }catch(err){
         res.status(500).json({
             error: "Internal server error"

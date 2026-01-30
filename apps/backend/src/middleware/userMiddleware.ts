@@ -15,6 +15,8 @@ export async function authenticateUser(
     next:NextFunction
 ){
     let token = req.headers["authorization"];
+    console.log("Auth Token:", token);
+
     if(!token){
         res.status(401).json({
             error: "No token provided"
@@ -25,13 +27,14 @@ export async function authenticateUser(
         token = token.slice(7, token.length);
     }
     const verifed = jwt.verify(token, process.env.JWT_SECRET || "defaultsecret") as { userId: string } | null;
+    console.log("Verification Result:", process.env.JWT_SECRET, verifed);
     if(!verifed){
         res.status(401).json({
             error: "Invalid token"
         });
         return;
     }
+    console.log("Verified User ID:", verifed.userId);
     req.userId = verifed.userId;
     next();
-
 }

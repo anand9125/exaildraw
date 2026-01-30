@@ -9,6 +9,7 @@ const userVerification = new Map<
    {verified:boolean;userId?:string}
   >();
 wss.on("connection", async (socket: WebSocket, req: Request) => {
+    console.log("New connection established");
     const searchParams = new URLSearchParams(req.url?.split("?")[1]);
     const token = searchParams.get("token");
     if (!token) {
@@ -33,6 +34,16 @@ wss.on("connection", async (socket: WebSocket, req: Request) => {
            socket.close();
            return;
         }
+        console.log("this is data",data)
+        const recevMessage = JSON.parse(data.toString());
+        console.log("Received Message:", recevMessage);
+        switch (recevMessage.type) {
+            case "ping":
+                socket.send(JSON.stringify({ type: "pong" }));
+                break;
+            default:
+                break;
+        }
         console.log("Message from user:", userStatus.userId);
     });
 
@@ -45,7 +56,7 @@ wss.on("connection", async (socket: WebSocket, req: Request) => {
 
 function verifyToken(token: string): string | null {
     try {
-        const userId = jwt.verify(token, process.env.JWT_SECRET || 'default_secret_key') as { userId: string };
+        const userId = jwt.verify(token, process.env.JWT_SECRET || 'defaultsecret') as { userId: string };
         return userId.userId;
     } catch (err) {
         return null;
