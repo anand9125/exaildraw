@@ -1,135 +1,379 @@
-# Turborepo starter
+# Excalidraw Clone
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack collaborative whiteboard application inspired by Excalidraw, built with modern web technologies.
 
-## Using this example
+## 🏗️ Architecture
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+This is a monorepo containing three main applications:
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+apps/
+├── backend/          # Express.js REST API server
+├── frontend/         # Next.js web application
+└── ws-backend/       # WebSocket server for real-time collaboration
+ packages/
+        └── db/       # Shared Prisma database package
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## 🚀 Tech Stack
+
+### Frontend
+- **Framework**: Next.js 14+ with App Router
+- **Language**: TypeScript
+- **Styling**: CSS (globals.css)
+- **State Management**: Custom StoreProvider
+- **Real-time**: WebSocket client
+
+### Backend
+- **Runtime**: Bun
+- **API Server**: Express.js (REST API)
+- **WebSocket Server**: Custom WebSocket implementation
+- **Database**: Prisma ORM
+- **Language**: TypeScript
+
+### Database Package
+- **ORM**: Prisma
+- **Shared**: Used by both backend services
+
+## 📋 Prerequisites
+
+- [Bun](https://bun.sh) v1.0 or higher
+- Node.js v18+ (for compatibility)
+- Database (PostgreSQL/MySQL/SQLite - based on your Prisma config)
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd exaildraw
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install all dependencies across the monorepo
+   bun install
+   ```
+
+3. **Set up environment variables**
+
+   Create `.env` files in each application:
+
+   **Backend (`apps/backend/.env`)**
+   ```env
+   PORT=3001
+   DATABASE_URL="your-database-url"
+   CORS_ORIGIN=http://localhost:3000
+   ```
+
+   **Frontend (`apps/frontend/.env`)**
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3001
+   NEXT_PUBLIC_WS_URL=ws://localhost:3002
+   ```
+
+   **WebSocket Backend (`apps/ws-backend/.env`)**
+   ```env
+   PORT=3002
+   DATABASE_URL="your-database-url"
+   ```
+
+   **Database Package (`apps/ws-backend/packages/db/.env`)**
+   ```env
+   DATABASE_URL="your-database-url"
+   ```
+
+4. **Set up the database**
+   ```bash
+   cd apps/ws-backend/packages/db
+   bun run prisma generate
+   bun run prisma migrate dev
+   cd ../../../../
+   ```
+
+## 🎯 Running the Application
+
+### Development Mode
+
+You can run all services simultaneously or individually:
+
+**Option 1: Run all services together**
+```bash
+# From the root directory
+bun run dev
+```
+
+**Option 2: Run services individually**
+
+In separate terminal windows:
+
+```bash
+# Terminal 1 - Frontend
+cd apps/frontend
+bun run dev
+
+# Terminal 2 - Backend API
+cd apps/backend
+bun run dev
+
+# Terminal 3 - WebSocket Server
+cd apps/ws-backend
+bun run dev
+```
+
+### Production Mode
+
+```bash
+# Build all applications
+bun run build
+
+# Start all services
+bun run start
+```
+
+## 📁 Project Structure
 
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+exaildraw/
+├── apps/
+│   ├── backend/
+│   │   ├── src/
+│   │   │   ├── controller/      # Route handlers
+│   │   │   ├── middleware/      # Express middleware
+│   │   │   ├── routes/          # API routes
+│   │   │   ├── types/           # TypeScript types
+│   │   │   └── index.ts         # Entry point
+│   │   ├── .env
+│   │   ├── .gitignore
+│   │   ├── package.json
+│   │   ├── README.md
+│   │   └── tsconfig.json
+│   │
+│   ├── frontend/
+│   │   ├── .next/               # Next.js build output
+│   │   ├── actions/             # Server actions
+│   │   ├── app/
+│   │   │   ├── (auth)/          # Auth routes group
+│   │   │   ├── canvas/          # Canvas page
+│   │   │   ├── create-room/     # Room creation
+│   │   │   ├── home/            # Home page
+│   │   │   ├── favicon.ico
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   └── StoreProvider.tsx
+│   │   ├── components/          # React components
+│   │   ├── lib/                 # Utilities
+│   │   ├── public/              # Static assets
+│   │   ├── types/               # TypeScript types
+│   │   ├── .env
+│   │   ├── .gitignore
+│   │   ├── next.config.js
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   └── ws-backend/
+│    
+│       ├── src/
+│       │   ├── index.ts         # WebSocket server
+│       │   └── types.ts
+│       ├── .env
+│       ├── .gitignore
+│       ├── package.json
+│       ├── README.md
+│       └── tsconfig.json
+packages/
+│          └── db/
+│              ├── prisma/
+│              │   └── schema.prisma
+│              ├── generated/    # Prisma client
+│              ├── src/
+│              ├── .env
+│              ├── package.json
+│              └── prisma.config.ts
+│
+├── node_modules/
+├── .gitignore
+├── package.json
+├── README.md
+└── bun.lockb
 ```
 
-### Develop
+## 🔧 Available Scripts
 
-To develop all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+### Root Level
+```bash
+bun install          # Install all dependencies
+bun run dev          # Run all apps in development mode
+bun run build        # Build all applications
+bun run start        # Start all applications in production
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+### Frontend
+```bash
+bun run dev          # Start Next.js dev server
+bun run build        # Build for production
+bun run start        # Start production server
+bun run lint         # Run ESLint
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+### Backend
+```bash
+bun run dev          # Start Express server with hot reload
+bun run build        # Build TypeScript
+bun run start        # Start production server
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### WebSocket Backend
+```bash
+bun run dev          # Start WebSocket server with hot reload
+bun run build        # Build TypeScript
+bun run start        # Start production server
 ```
 
-## Useful Links
+### Database Package
+```bash
+bun run prisma:generate    # Generate Prisma client
+bun run prisma:migrate     # Run database migrations
+bun run prisma:studio      # Open Prisma Studio
+bun run prisma:push        # Push schema changes to database
+```
 
-Learn more about the power of Turborepo:
+## 🌐 API Endpoints
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+### REST API (Backend - Port 3001)
+
+```
+GET    /api/health              # Health check
+POST   /api/auth/register       # User registration
+POST   /api/auth/login          # User login
+GET    /api/rooms               # Get all rooms
+POST   /api/rooms               # Create a new room
+GET    /api/rooms/:id           # Get room details
+PUT    /api/rooms/:id           # Update room
+DELETE /api/rooms/:id           # Delete room
+```
+
+### WebSocket Server (Port 3002)
+
+```
+Events:
+- connection              # Client connects
+- join-room              # Join a drawing room
+- draw                   # Send drawing data
+- cursor-move            # Update cursor position
+- disconnect             # Client disconnects
+```
+
+## 🎨 Features
+
+- ✅ Real-time collaborative drawing
+- ✅ Multiple drawing tools (pen, shapes, text)
+- ✅ User authentication
+- ✅ Room-based collaboration
+- ✅ Cursor tracking
+- ✅ Responsive design
+- ✅ TypeScript for type safety
+- ✅ Bun for fast development and builds
+
+## 🗄️ Database Schema
+
+The database schema is defined in `apps/ws-backend/packages/db/prisma/schema.prisma`. Key models include:
+
+- **User**: User authentication and profiles
+- **Room**: Drawing rooms/canvases
+- **Drawing**: Saved drawing data
+- (Add more based on your actual schema)
+
+## 🔐 Authentication
+
+The application uses authentication for securing routes and identifying users. Auth routes are grouped under `(auth)` in the frontend.
+
+## 🚢 Deployment
+
+### Frontend (Next.js)
+Deploy to Vercel, Netlify, or any platform supporting Next.js:
+```bash
+cd apps/frontend
+bun run build
+```
+
+### Backend & WebSocket
+Deploy to any Node.js hosting platform (Railway, Render, DigitalOcean):
+```bash
+# Backend
+cd apps/backend
+bun run build
+
+# WebSocket
+cd apps/ws-backend
+bun run build
+```
+
+### Environment Variables
+Make sure to set all environment variables in your deployment platform.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 Development Guidelines
+
+- Follow TypeScript best practices
+- Use ESLint and Prettier for code formatting
+- Write meaningful commit messages
+- Test your changes before submitting PRs
+- Update documentation for new features
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**Port already in use**
+```bash
+# Kill the process using the port
+lsof -ti:3001 | xargs kill -9  # Backend
+lsof -ti:3000 | xargs kill -9  # Frontend
+lsof -ti:3002 | xargs kill -9  # WebSocket
+```
+
+**Database connection issues**
+```bash
+# Reset the database
+cd apps/ws-backend/packages/db
+bun run prisma migrate reset
+bun run prisma generate
+```
+
+**Dependencies issues**
+```bash
+# Clear cache and reinstall
+rm -rf node_modules bun.lockb
+bun install
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 👥 Authors
+
+- Your Name - Initial work
+
+## 🙏 Acknowledgments
+
+- Inspired by [Excalidraw](https://excalidraw.com)
+- Built with [Bun](https://bun.sh)
+- Powered by [Next.js](https://nextjs.org)
+
+## 📞 Support
+
+For support, email your-email@example.com or open an issue in the repository.
+
+---
+
+**Built with ❤️ using Bun and modern web technologies**
