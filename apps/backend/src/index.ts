@@ -3,10 +3,11 @@ import prisma from "@repo/db";
 import { authRouter } from "./routes/authRouter";
 import { roomRouter } from "./routes/roomRouter";
 import { contentRouter } from "./routes/contentRouter";
+import cookieParser from "cookie-parser";
 const app = express();
 
 app.use(express.json());
-
+app.use(cookieParser());
 
 app.use("/api/v1/user",authRouter);
 

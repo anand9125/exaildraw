@@ -35,9 +35,25 @@ export const registerHandler = async (req: Request, res: Response) => {
                 photo:parseData.data?.photoUrl
             }
         });
-        res.status(201).json({
-            message: "User registered successfully",
-            userId: newUser.id
+        const user = {
+            id: newUser.id,
+            username: newUser.username,
+            name: newUser.name,
+            photo: newUser.photo
+        };
+        const token = jwt.sign(
+            user,
+            process.env.JWT_SECRET || "kjhytfrde45678iuytrfdcfgy6tr"
+        );
+
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000,
+        });
+        res.json({
+            message: "User Signed Up",
+            user,
+            token,
         });
     }catch(err){
         res.status(500).json({
@@ -68,12 +84,24 @@ export const loginHandler = async (req: Request, res: Response) => {
             });
             return;
         }
-        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "defaultsecret", {
-            expiresIn: "1h"
+      
+        const userObj = {
+            id: user.id,
+            username: user.username,
+            name: user.name,
+            photo: user.photo
+        };
+        const token = jwt.sign(
+            userObj,
+            process.env.JWT_SECRET || "kjhytfrde45678iuytrfdcfgy6tr"
+        );
+        res.cookie("jwt", token, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000,
         });
         res.status(200).json({
             message: "Login successful",
-            userId: user.id,
+            user: userObj,
             token
         });
     }catch(err){
@@ -81,4 +109,39 @@ export const loginHandler = async (req: Request, res: Response) => {
             error: "Internal server error"
         });
     }
+}
+
+export async function signoutController(req: Request, res: Response) {
+  res.clearCookie("jwt");
+  res.json({
+    message: "User logged out",
+  });
+}
+export async function infoController(req: Request, res: Response) {
+  const userId = req.userId;
+  console.log("Fetching info for user ID:", userId);
+
+  try {
+    const userFound = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    const user = {
+      id: userFound?.id,
+      username: userFound?.username,
+      name: userFound?.name,
+    };
+
+    res.status(200).json({
+      message: "User info",
+      user,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(401).json({
+      message: "Error faced while getting user info, try again",
+    });
+  }
 }
