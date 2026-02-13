@@ -20,6 +20,7 @@ const userVerificationStatus = new Map<
 wss.on("connection", async (socket: WebSocket, req: Request) => {
   const searchParams = new URLSearchParams(req.url.split("?")[1]);
   const token = searchParams.get("token");
+  console.log("New WebSocket connection");
 
   userVerificationStatus.set(socket, { verified: false });
 

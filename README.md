@@ -2,6 +2,11 @@
 
 A full-stack collaborative whiteboard application inspired by Excalidraw, built with modern web technologies.
 
+## Demo Video
+
+[Watch Demo](./untitled.mp4)
+
+
 ## 🏗️ Architecture
 
 This is a monorepo containing three main applications:

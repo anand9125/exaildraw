@@ -1,0 +1,32 @@
+FROM oven/bun:1.1.8-debian
+
+WORKDIR /usr/src/app
+
+# 🔑 Tell Bun where dependencies are
+ENV NODE_PATH=/usr/src/app/node_modules
+
+COPY package.json bun.lock turbo.json .npmrc ./
+COPY apps/backend ./apps/backend
+COPY apps/ws-backend ./apps/ws-backend
+COPY packages ./packages
+
+# Install deps (skip scripts to avoid prisma)
+RUN bun install --frozen-lockfile --ignore-scripts
+
+# Prisma
+WORKDIR /usr/src/app/packages/db
+RUN bunx prisma generate
+
+# Build all apps
+WORKDIR /usr/src/app
+RUN bun run build
+
+EXPOSE 3001
+EXPOSE 8080
+
+ENV NODE_ENV=production
+
+COPY docker/entrypoint.sh /usr/src/app/entrypoint.sh
+RUN chmod +x /usr/src/app/entrypoint.sh
+
+ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

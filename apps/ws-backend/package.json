@@ -3,9 +3,10 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "scripts": {
+   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "start": "bun src/index.ts"
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "start": "bun dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@repo/db": "workspace:*",
+    "cors": "^2.8.6",
     "jsonwebtoken": "^9.0.3",
     "ws": "^8.19.0",
     "zod": "^4.3.6"

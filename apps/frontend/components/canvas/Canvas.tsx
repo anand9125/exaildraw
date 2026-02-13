@@ -1463,20 +1463,38 @@ const Canvas = ({ roomId, token }: { roomId: string; token: string }) => {
   return (
     <TooltipProvider>
       <div className="h-screen w-screen relative">
-        <div className="fixed z-2 w-fit h-fit bg-neutral-900 rounded-md left-3 top-3">
-          <div className="bg-green-400/25 z-1 rounded-lg px-1.5 py-1 flex gap-1.5 items-center">
-            <Button
-              size="icon"
-              className={`bg-transparent relative p-2 hover:bg-green-600/20 cursor-pointer`}
-              onClick={() => {
-                closeSocket();
-                redirect("/home");
-              }}
-            >
-              <AiOutlineHome className="text-white" size="18" />
-            </Button>
-          </div>
-        </div>
+        <div className="fixed z-2 left-3 top-3 flex items-center gap-5 pr-5">
+  {/* Home Button */}
+  <div className="w-fit h-fit bg-neutral-900 rounded-md">
+    <div className="bg-green-400/25 rounded-lg px-1.5 py-1 flex items-center">
+      <Button
+        size="icon"
+        className="bg-transparent p-2 hover:bg-green-600/20 cursor-pointer"
+        onClick={() => {
+          closeSocket();
+          redirect("/home");
+        }}
+      >
+        <AiOutlineHome className="text-white" size={18} />
+      </Button>
+    </div>
+  </div>
+
+  {/* Share Button (separate background, same style) */}
+  <div className="w-fit h-fit bg-neutral-900 rounded-md">
+    <div className="bg-green-400/25 rounded-lg px-1.5 py-1 flex items-center">
+      <Button
+        size="icon"
+        className="bg-transparent p-2 hover:bg-green-600/20 cursor-pointer"
+        onClick={() => {
+          // share logic
+        }}
+      >Share 
+      </Button>
+    </div>
+  </div>
+</div>
+
 
         <div className="fixed z-2 w-fit h-fit bg-black rounded-lg right-3 top-3">
           <div className="bg-green-400/25 z-1 rounded-lg px-1.5 py-1 flex gap-1.5 items-center">
