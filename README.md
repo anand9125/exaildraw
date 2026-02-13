@@ -4,7 +4,7 @@ A full-stack collaborative whiteboard application inspired by Excalidraw, built 
 
 ## Demo Video
 
-[Watch Demo](./untitled.mp4)
+[Watch Demo](https://github.com/anand9125/exaildraw/issues/1)
 
 
 ## 🏗️ Architecture
