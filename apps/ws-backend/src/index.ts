@@ -4,7 +4,7 @@ import { WebSocketMessageSchema } from './types';
 import prisma from "@repo/db";
 
 interface WSConnection {
-  userId: string;
+  userId:  string;
   socket: WebSocket;
   verified: boolean;
 }
