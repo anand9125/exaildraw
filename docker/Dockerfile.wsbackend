@@ -1,0 +1,28 @@
+FROM oven/bun:1
+
+WORKDIR /app
+
+# workspace files
+COPY package.json bun.lock turbo.json ./
+
+# monorepo
+COPY apps ./apps
+COPY packages ./packages
+
+# deps
+RUN bun install --frozen-lockfile
+
+# prisma client (same db package used by ws)
+WORKDIR /app/packages/db
+RUN bunx prisma generate
+
+# build ws backend
+WORKDIR /app
+RUN bunx turbo run build --filter=ws-backend --cache=local:r
+
+# run ws server
+WORKDIR /app/apps/ws-backend
+
+EXPOSE 3002
+
+CMD ["bun", "run", "start"]

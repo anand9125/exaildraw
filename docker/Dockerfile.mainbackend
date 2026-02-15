@@ -1,0 +1,28 @@
+FROM oven/bun:1
+
+WORKDIR /app
+
+# ---- Copy workspace files ----
+COPY package.json bun.lock turbo.json ./
+
+# ---- Copy monorepo ----
+COPY apps ./apps
+COPY packages ./packages
+
+# ---- Install deps ----
+RUN bun install --frozen-lockfile
+
+# ---- Generate Prisma client ----
+WORKDIR /app/packages/db
+RUN bunx prisma generate
+
+# ---- Build backend only ----
+WORKDIR /app
+RUN bunx turbo run build --filter=backend --cache=local:r
+
+# ---- Start backend ----
+WORKDIR /app/apps/backend
+
+EXPOSE 3001
+
+CMD ["bun", "run", "start"]

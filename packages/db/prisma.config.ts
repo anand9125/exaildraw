@@ -7,6 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "postgresql://admin:secret@localhost:5432/exaildraw",
+    url: "postgresql://neondb_owner:npg_ED3NkSTaur0Q@ep-little-night-ai1tg66f-pooler.c-4.us-east-1.aws.neon.tech/neondb?sslmode=verify-full&channel_binding=require",
   },
 });
