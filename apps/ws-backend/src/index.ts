@@ -1,7 +1,7 @@
 import { WebSocket, WebSocketServer } from 'ws';
 import jwt from 'jsonwebtoken';
 import { WebSocketMessageSchema } from './types';
-import prisma from "@repo/db";
+import  prisma from "@repo/db";
 
 interface WSConnection {
   userId: string;
