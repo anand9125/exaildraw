@@ -63,6 +63,7 @@ import {
   fetchMoreChatMessages,
 } from "@/actions/chatActions";
 import { fetchAllDraws } from "@/actions/contentActions";
+import { NEXT_PUBLIC_WS_URL } from "@/lib";
 
 const Canvas = ({ roomId, token }: { roomId: string; token: string }) => {
   
@@ -70,7 +71,7 @@ const Canvas = ({ roomId, token }: { roomId: string; token: string }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isClient, setIsClient] = useState(false);
   const { socket, isLoading, isError } = useWebSocket(
-    `${process.env.NEXT_PUBLIC_WS_URL}?token=${token}`
+    `${NEXT_PUBLIC_WS_URL}?token=${token}`
   );
   const [serverReady, setServerReady] = useState(false);
   const dispatch = useAppDispatch();

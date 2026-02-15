@@ -1,4 +1,4 @@
-name: Build and Deploy to Docker Hub
+name: Build and Deploy to Docker Hub + EC2
 
 on:
   push:
@@ -22,9 +22,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # -----------------------------
-      # BUILD MAIN BACKEND IMAGE
-      # -----------------------------
       - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
@@ -33,9 +30,7 @@ jobs:
           push: true
           tags: anand687/exaildraw-backend:latest
 
-      # -----------------------------
-      # BUILD WS BACKEND IMAGE
-      # -----------------------------
+     
       - name: Build & Push WS Backend
         uses: docker/build-push-action@v5
         with:
@@ -44,10 +39,45 @@ jobs:
           push: true
           tags: anand687/exaildraw-wsbackend:latest
 
-      # -----------------------------
-      # VERIFY PUSHED IMAGES
-      # -----------------------------
-      - name: Verify images
-        run: |
-          docker pull anand687/exaildraw-backend:latest
-          docker pull anand687/exaildraw-wsbackend:latest
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Pulling latest images..."
+             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+            docker pull anand687/exaildraw-backend:latest
+            docker pull anand687/exaildraw-wsbackend:latest
+
+            echo "Stopping old containers..."
+            docker stop api || true
+            docker rm api || true
+            docker stop ws || true
+            docker rm ws || true
+
+            echo "Starting API container..."
+            docker run -d \
+              --name api \
+              --env-file ~/exaildraw-deploy/.env.backend \
+              --network app-network \
+              anand687/exaildraw-backend:latest
+
+            echo "Starting WS container..."
+            docker run -d \
+              --name ws \
+              --env-file ~/exaildraw-deploy/.env.ws \
+              --network app-network \
+              anand687/exaildraw-wsbackend:latest
+
+            echo "Restarting nginx..."
+            docker restart nginx || true
+
+            echo "Deployment complete!"

@@ -9,7 +9,7 @@ interface WSConnection {
   verified: boolean;
 }
 
-const wss = new WebSocketServer({ port: Number(process.env.PORT)|| 8080 });
+const wss = new WebSocketServer({ port: Number(process.env.PORT)|| 3002 });
 
 const activeRooms = new Map<string, WSConnection[]>();
 const userVerificationStatus = new Map<
@@ -258,7 +258,7 @@ wss.on("connection", async (socket: WebSocket, req: Request) => {
   try {
     const verified = jwt.verify(
       token,
-      process.env.JWT_SECRET || "kjhytfrde45678iuytrfdcfgy6tr"
+      "defaultsecret"
     ) as { id: string };
 
     if (!verified?.id) {

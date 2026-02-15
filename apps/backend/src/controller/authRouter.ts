@@ -43,7 +43,7 @@ export const registerHandler = async (req: Request, res: Response) => {
         };
         const token = jwt.sign(
             user,
-            process.env.JWT_SECRET || "kjhytfrde45678iuytrfdcfgy6tr"
+            "defaultsecret" 
         );
 
         res.cookie("jwt", token, {

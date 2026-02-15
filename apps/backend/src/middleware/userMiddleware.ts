@@ -35,7 +35,7 @@ export async function authenticateUser(
   try {
     const verified = jwt.verify(
       token,
-      process.env.JWT_SECRET || "kjhytfrde45678iuytrfdcfgy6tr"
+      "defaultsecret"
     ) as { id: string };
 
     if (!verified?.id) {
