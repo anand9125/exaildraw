@@ -1,0 +1,5 @@
+{
+  "rootDirectory": "apps/frontend",
+  "installCommand": "bun install",
+  "buildCommand": "bun run build"
+}
