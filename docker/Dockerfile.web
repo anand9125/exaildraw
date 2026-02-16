@@ -1,0 +1,22 @@
+# ---------- deps ----------
+FROM oven/bun:1 AS deps
+WORKDIR /app
+COPY . .
+RUN bun install
+
+# ---------- build ----------
+FROM oven/bun:1 AS builder
+WORKDIR /app
+COPY --from=deps /app ./
+RUN bunx turbo run build --filter=exaildraw-frontend...
+
+# ---------- runner ----------
+FROM oven/bun:1 AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app ./
+
+EXPOSE 3000
+
+CMD ["bun", "run", "--filter", "exaildraw-frontend", "start"]

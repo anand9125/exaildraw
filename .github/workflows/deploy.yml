@@ -7,12 +7,14 @@ on:
     paths:
       - "apps/backend/**"
       - "apps/ws-backend/**"
+      - "apps/frontend/**"
       - "docker/Dockerfile.mainbackend"
       - "docker/Dockerfile.wsbackend"
-      - "packages/**"          # keep if backend depends on shared packages
+      - "docker/Dockerfile.web"
+      - "packages/**"
       - "pnpm-lock.yaml"
       - "turbo.json"
-     
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -30,6 +32,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # ---------- Backend ----------
       - name: Build & Push Backend
         uses: docker/build-push-action@v5
         with:
@@ -38,7 +41,7 @@ jobs:
           push: true
           tags: anand687/exaildraw-backend:latest
 
-     
+      # ---------- WS Backend ----------
       - name: Build & Push WS Backend
         uses: docker/build-push-action@v5
         with:
@@ -46,6 +49,16 @@ jobs:
           file: ./docker/Dockerfile.wsbackend
           push: true
           tags: anand687/exaildraw-wsbackend:latest
+
+      # ---------- Frontend ----------
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.web
+          push: true
+          tags: anand687/exaildraw-web:latest
+
 
   deploy:
     needs: build-and-push
@@ -59,17 +72,22 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            echo "Pulling latest images..."
-             docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
+            echo "Logging into Docker Hub..."
+            docker login -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+            echo "Pulling latest images..."
             docker pull anand687/exaildraw-backend:latest
             docker pull anand687/exaildraw-wsbackend:latest
+            docker pull anand687/exaildraw-web:latest
 
             echo "Stopping old containers..."
             docker stop api || true
             docker rm api || true
             docker stop ws || true
             docker rm ws || true
+            docker stop web || true
+            docker rm web || true
 
             echo "Starting API container..."
             docker run -d \
@@ -84,6 +102,13 @@ jobs:
               --env-file ~/exaildraw-deploy/.env.ws \
               --network app-network \
               anand687/exaildraw-wsbackend:latest
+
+            echo "Starting Frontend container..."
+            docker run -d \
+              --name web \
+              --network app-network \
+              -e NODE_ENV=production \
+              anand687/exaildraw-web:latest
 
             echo "Restarting nginx..."
             docker restart nginx || true

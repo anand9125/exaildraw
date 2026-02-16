@@ -48,8 +48,12 @@ export const registerHandler = async (req: Request, res: Response) => {
 
         res.cookie("jwt", token, {
             httpOnly: true,
+            secure: true,          // REQUIRED in production (HTTPS)
+            sameSite: "none",      // REQUIRED if frontend & backend are different domains
             maxAge: 30 * 24 * 60 * 60 * 1000,
+            path: "/",
         });
+
         res.json({
             message: "User Signed Up",
             user,
