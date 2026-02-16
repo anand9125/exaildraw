@@ -4,7 +4,15 @@ on:
   push:
     branches:
       - master
-
+    paths:
+      - "apps/backend/**"
+      - "apps/ws-backend/**"
+      - "docker/Dockerfile.mainbackend"
+      - "docker/Dockerfile.wsbackend"
+      - "packages/**"          # keep if backend depends on shared packages
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+     
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
